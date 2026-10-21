@@ -1,0 +1,31 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "usuarios": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).child('administrador').val() === true",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && ((auth.uid === $uid && !data.exists() && auth.token.email.endsWith('@oestesaude.com.br')) || root.child('usuarios').child(auth.uid).child('administrador').val() === true)",
+        "administrador": {
+          ".validate": "newData.val() === false || root.child('usuarios').child(auth.uid).child('administrador').val() === true"
+        }
+      }
+    },
+    "visitas": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).child('administrador').val() === true",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$id": {
+          ".write": "auth != null && (root.child('usuarios').child(auth.uid).child('administrador').val() === true || (auth.uid === $uid && newData.exists()))",
+          ".validate": "newData.hasChildren(['dataVisita','empresa','cidade','objetivo','assuntos','nomeUsuario'])"
+        }
+      }
+    },
+    "acoesColetivas": {
+  ".read": "auth != null",
+  "$id": {
+    ".write": "auth != null && (root.child('usuarios').child(auth.uid).child('administrador').val() === true || (newData.exists() && newData.child('criadoPor').val() === auth.uid && (!data.exists() || data.child('criadoPor').val() === auth.uid)))",
+    ".validate": "newData.hasChildren(['titulo','data','criadoPor'])"
+  }
+}
