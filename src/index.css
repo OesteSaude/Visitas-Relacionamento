@@ -59,3 +59,5 @@ th, td { text-align: left; padding: .6rem .7rem; border-bottom: 1px solid var(--
 
 label.check { flex-direction: row; align-items: center; gap: .6rem; }
 label.check input { width: auto; }
+select { font: inherit; font-weight: 400; padding: .65rem .8rem; border: 1px solid var(--borda); border-radius: 8px; background: var(--bg); color: var(--texto); }
+select:focus { outline: 2px solid var(--primaria); border-color: transparent; }

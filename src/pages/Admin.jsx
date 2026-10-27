@@ -13,6 +13,7 @@ export default function Admin() {
   const [usuarios, setUsuarios] = useState([]);
   const [de, setDe] = useState('');
   const [ate, setAte] = useState('');
+  const [func, setFunc] = useState('');
 
   useEffect(() => {
     const o1 = onValue(ref(db, 'visitas'), (s) => {
@@ -30,6 +31,7 @@ export default function Admin() {
   const noPeriodo = (d) => (!de || d >= de) && (!ate || d <= ate);
   const vF = useMemo(() => visitas.filter((v) => noPeriodo(v.dataVisita)), [visitas, de, ate]);
   const aF = useMemo(() => acoes.filter((a) => noPeriodo(a.data)), [acoes, de, ate]);
+  const vTabela = useMemo(() => (func ? vF.filter((v) => v.uid === func) : vF), [vF, func]);
 
   return (
     <>
@@ -42,12 +44,22 @@ export default function Admin() {
         <div className="card linha filtro">
           <label>De<input type="date" value={de} onChange={(e) => setDe(e.target.value)} /></label>
           <label>Até<input type="date" value={ate} onChange={(e) => setAte(e.target.value)} /></label>
-          {(de || ate) && <button className="btn btn-sec" onClick={() => { setDe(''); setAte(''); }}>Limpar período</button>}
+          {aba === 'Todas as visitas' && (
+            <label>Funcionário
+              <select value={func} onChange={(e) => setFunc(e.target.value)}>
+                <option value="">Todos os funcionários</option>
+                {usuarios.map((u) => <option key={u.uid} value={u.uid}>{u.nome}</option>)}
+              </select>
+            </label>
+          )}
+          {(de || ate || func) && (
+            <button className="btn btn-sec" onClick={() => { setDe(''); setAte(''); setFunc(''); }}>Limpar filtros</button>
+          )}
         </div>
       )}
 
       {aba === 'Comparativo' && <Comparativo visitas={vF} acoes={aF} usuarios={usuarios} />}
-      {aba === 'Todas as visitas' && <TodasVisitas visitas={vF} />}
+      {aba === 'Todas as visitas' && <TodasVisitas visitas={vTabela} />}
       {aba === 'Ações coletivas' && <Acoes acoes={acoes} uid={usuario.uid} />}
       {aba === 'Usuários' && <Usuarios usuarios={usuarios} visitas={visitas} />}
     </>
